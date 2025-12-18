@@ -21,7 +21,7 @@ GetSentencesFromConllu <- function(conlluFile,corpusname,refstring,SentMetadataD
    SentencesDF <- tokensDF[str_detect(tokensDF$ref,refstring),colnames(tokensDF) %in% c('sentence_id','sentence','ref','sent_order')]
    SentencesDF <- SentencesDF[!duplicated(SentencesDF),]
 
-   outputfolder <- './data/0_sentences/'
+   outputfolder <- './data/1_sentences/'
    system(paste0('mkdir ',outputfolder))
    write_tsv(SentencesDF,paste0(outputfolder,gsub('\\.','_',refstring),'_',corpusname,'_sentences.tsv'))
 
@@ -57,7 +57,7 @@ GetTranslationsFromDOC <- function(docfile,corpusname,refstring){
                                    translation=Translation,
                                    stringsAsFactors = F)
 
-   outputfolder <- './data/1_align2check/'
+   outputfolder <- './data/2_align2check/'
    system(paste0('mkdir ',outputfolder))
    write_tsv(TextTranslationDF,paste0(outputfolder,gsub('\\.','_',refstring),'_',corpusname,'_align2check.tsv'))
 
@@ -87,7 +87,7 @@ GetTranslationsFromMD <- function(mdfile,corpusname,refstring,translator){
                                    translator=translator,
                                    stringsAsFactors = F)
 
-   outputfolder <- './data/1_align2check/'
+   outputfolder <- './data/2_align2check/'
    system(paste0('mkdir ',outputfolder))
    write_tsv(TextTranslationDF,paste0(outputfolder,gsub('\\.','_',refstring),'_',corpusname,'_align2check.tsv'))
 
@@ -98,8 +98,9 @@ GetTranslationsFromMD <- function(mdfile,corpusname,refstring,translator){
 CheckTranslationDiff <- function(alignedfile,refstring,corpusname){
 
    # check translation alignment
-   CheckTranslationDF <- read.csv(alignedfile,sep='\t')
+   CheckTranslationDF <- read.delim2(alignedfile,quote = '')
    CheckTranslationDF <- CheckTranslationDF[!is.na(CheckTranslationDF$sentence_id),]
+   CheckTranslationDF <- CheckTranslationDF[CheckTranslationDF$translation!='',]
    CheckTranslationDF$norm_sentence <- gsub('[^A-ω ]', '', CheckTranslationDF$sentence) %>%
       gsub(' +', ' ', .) %>%
       gsub(' que ', 'que ', .) %>%
@@ -108,7 +109,8 @@ CheckTranslationDiff <- function(alignedfile,refstring,corpusname){
       gsub("(.*)", "\\L\\1", ., perl = T) %>%
       gsub('j', 'i', .) %>%
       gsub('v', 'u', .) %>%
-      gsub('^ ?(.*) ?$','\\1',.)
+      gsub('^ ','',.) %>%
+      gsub(' $','',.)
    CheckTranslationDF$norm_text <- gsub('[^A-ω ]', '', CheckTranslationDF$latintext) %>%
       gsub(' +', ' ', .) %>%
       gsub(' que ', 'que ', .) %>%
@@ -117,11 +119,12 @@ CheckTranslationDiff <- function(alignedfile,refstring,corpusname){
       gsub("(.*)", "\\L\\1", ., perl = T) %>%
       gsub('j', 'i', .) %>%
       gsub('v', 'u', .) %>%
-      gsub('^ ?(.*) ?$','\\1',.)
+      gsub('^ ','',.) %>%
+      gsub(' $','',.)
    CheckTranslationDF$sameEdition <- unlist(lapply(seq_along(CheckTranslationDF[,1]), function(i) CheckTranslationDF$norm_sentence[i]==CheckTranslationDF$norm_text[i]))
    table(CheckTranslationDF$sameEdition)
 
-   outputfolder <- './data/3_diff2check/'
+   outputfolder <- './data/4_diff2check/'
    system(paste0('mkdir ',outputfolder))
    write_tsv(CheckTranslationDF,paste0(outputfolder,gsub('\\.','_',refstring),'_',corpusname,'_diff2check.tsv'))
 
