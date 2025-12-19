@@ -32,6 +32,7 @@ GetSentencesFromConllu <- function(conlluFile,corpusname,refstring,SentMetadataD
 
 GetTranslationsFromDOC <- function(docfile,corpusname,refstring){
 
+   library(antiword)
    doctext <- readLines(textConnection(antiword(docfile)))
    doctext <- doctext[str_detect(doctext,'^\\|')]
    doctext <- gsub('^\\|','',doctext) %>%
