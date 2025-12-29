@@ -26,7 +26,9 @@ refstring <- 'Cic.Off.1'
 ## GET sentences from conllu file
 SentencesDF <- GetSentencesFromConllu(conlluFile,corpusname,refstring,SentMetadataDF)
 
-## GET translations from doc file
+## GET translations from doc.md file
+# NB: for bulk conversion from legacy msword doc to markdown, use this Google Apps Script:
+# <https://script.google.com/home/projects/1H_1bsIgNe5C1Pz9TIsqdQRkSV0YsVJLL5b2Nxw5uxV0ERG7pMyJTNiXB/edit>
 TextTranslationDF <- GetTranslationsFromMD(mdfile,corpusname,refstring,translator)
 
 ########################################
