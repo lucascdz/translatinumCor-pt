@@ -4,7 +4,7 @@ library(tidyverse)
 source('./R/translatinumCor_functions.R')
 
 ## ARGUMENTS
-currentversion <- './translatinumCor-pt_v.1.1.tsv'
+currentversion <- './translatinumCor-pt_v.1.2.tsv'
 conlluFile <- '../../FILES/atomiclab/corpora/UD_Latin-PROIEL/Cicero_De_officiis.conllu'
 corpusname <- 'proiel'
 mdfile <- './data/0_translations/Cic-b08-Ad Att-LIBER VIII.doc.md'
