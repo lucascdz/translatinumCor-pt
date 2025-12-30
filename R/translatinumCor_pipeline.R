@@ -1,16 +1,17 @@
 library(tidyverse)
 
-## ARGUMENTS 1
+## FUNCTIONS
+source('./R/translatinumCor_functions.R')
+
+## ARGUMENTS
+currentversion <- './translatinumCor-pt_v.1.1.tsv'
 conlluFile <- '../../FILES/atomiclab/corpora/UD_Latin-PROIEL/Cicero_De_officiis.conllu'
 corpusname <- 'proiel'
 mdfile <- './data/0_translations/Cic-b08-Ad Att-LIBER VIII.doc.md'
 translator <- 'José Dejalma Dezotti'
 
-## FUNCTIONS
-source('./R/translatinumCor_functions.R')
-
 ## GET sentences already aligned
-TranslatinumCorDF <- read.delim2('./translatinumCor-pt_v.1.1.tsv')
+TranslatinumCorDF <- read.delim2(currentversion)
 
 ## GET sentence metadata
 # NB: needs 'SentMetadata_corpusname.tsv' in data folder
