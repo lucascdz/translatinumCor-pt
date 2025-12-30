@@ -1,13 +1,16 @@
 
+library(dplyr)
 library(stringr)
 library(readtext)
 
-corpuspath <- '/Users/lucascdz/FILES/atomiclab/corpora/DezottiJD_traducoes/TRADUCOES_LASLA_Corpus/'
-#filename <- 'Caesar_BellumCivile_CaesBC2.docx'
+currentversion <- './translatinumCor-pt_v.1.1.tsv'
+laslanew <- '/Users/lucascdz/FILES/atomiclab/corpora/DezottiJD_traducoes/TRADUCOES_LASLA_Corpus/'
+translator <- 'José Dejalma Dezotti'
 
-GetLaslaTranslations <- function(corpuspath,filename){
 
-   docx <- readtext::readtext(paste0(corpuspath,filename))
+GetLaslaTranslations <- function(laslanew,filename){
+
+   docx <- readtext::readtext(paste0(laslanew,filename))
    docx_content <- readLines(textConnection(docx$text))
 
    indices_start <- which(str_detect(docx_content,gsub('.*_(\\w+).docx','\\1',filename)))
@@ -17,10 +20,10 @@ GetLaslaTranslations <- function(corpuspath,filename){
    contentLIST <- lapply(seq_along(indices_start),
                          function(i) c(docx_content[indices_start[i]:indices_stop[i]]))
 
-   DataFrame <- data.frame(sentids=unlist(lapply(seq_along(contentLIST),
-                                                 function(i) contentLIST[[i]][1])),
-                           latintext=unlist(lapply(seq_along(contentLIST),
-                                                   function(i) contentLIST[[i]][3])),
+   DataFrame <- data.frame(sentence_id=unlist(lapply(seq_along(contentLIST),
+                                                     function(i) contentLIST[[i]][1])),
+                           #latintext=unlist(lapply(seq_along(contentLIST),
+                           #                        function(i) contentLIST[[i]][3])),
                            translation=unlist(lapply(seq_along(contentLIST),
                                                      function(i) contentLIST[[i]][4])),
                            stringsAsFactors = F)
@@ -31,8 +34,17 @@ GetLaslaTranslations <- function(corpuspath,filename){
 
 }
 
-filenames <- dir(corpuspath,pattern = '\\.docx$')
-contentLIST <- lapply(seq_along(filenames), function(i) GetLaslaTranslations(corpuspath,filenames[i]))
+filenames <- dir(laslanew,pattern = '\\.docx$')
+NewTranslationsLIST <- lapply(seq_along(filenames), function(i) GetLaslaTranslations(laslanew,filenames[i]))
+NewTranslationsDF <- do.call(rbind,NewTranslationsLIST)
+NewTranslationsDF$translator <- translator
+NewTranslationsDF$sameEdition <- T
 
-contentDF <- do.call(rbind,testLIST)
+TranslatinumCorDF <- read.delim2(currentversion)
+
+## remove old versions of translated sentences
+TranslatinumCorDF <- TranslatinumCorDF[!TranslatinumCorDF$sentence_id %in% NewTranslationsDF$sentence_id & TranslatinumCorDF$translator==translator,]
+TranslatinumCorDF <- rbind(TranslatinumCorDF,NewTranslationsDF)
+
+write_tsv(TranslatinumCorDF,'./translatinumCor-pt_v.1.2.tsv')
 
