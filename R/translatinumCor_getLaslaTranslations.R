@@ -40,11 +40,16 @@ NewTranslationsDF <- do.call(rbind,NewTranslationsLIST)
 NewTranslationsDF$translator <- translator
 NewTranslationsDF$sameEdition <- T
 
-TranslatinumCorDF <- read.delim2(currentversion)
 
 ## remove old versions of translated sentences
+TranslatinumCorDF <- read.delim2(currentversion)
 TranslatinumCorDF <- TranslatinumCorDF[!TranslatinumCorDF$sentence_id %in% NewTranslationsDF$sentence_id & TranslatinumCorDF$translator==translator,]
 TranslatinumCorDF <- rbind(TranslatinumCorDF,NewTranslationsDF)
 
+TranslatinumCorDF$translation <- gsub('^\\d+\\.?\\s?','',TranslatinumCorDF$translation) %>%
+   gsub('^\\d+\\.?\\s?','',.) %>%
+   gsub('^\\d+\\.?\\s?','',.)
+TranslatinumCorDF$translation <- gsub('^ ','',TranslatinumCorDF$translation)
+TranslatinumCorDF <- TranslatinumCorDF[TranslatinumCorDF$translation!='',]
 write_tsv(TranslatinumCorDF,'./translatinumCor-pt_v.1.2.tsv')
 
